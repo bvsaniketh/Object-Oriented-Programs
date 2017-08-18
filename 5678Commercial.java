@@ -29,23 +29,27 @@ class Stockaccount
 {	
 
 	String name1,option1,user1,choicemode="NO ";
-	long qty1;
+	long qty1,badd=0,sadd=0;
 	long price1;
 	LinkedList l1=new LinkedList();
 	Stack st1=new Stack();
 	Queue qu1=new Queue();
-	Stockaccount(String name1,long qty1,long price1)
-	{
-		this.name1=name1;
-		this.qty1=qty1;
-		this.price1=price1;
-	}
+
 	Scanner sc =new Scanner(System.in);
 	JSONParser parser=new JSONParser();
 	JSONObject jo=new JSONObject();
 	HashMap<String,Stockaccount>Stockd =new HashMap<String,Stockaccount>();
 	String search;
 	Date date;
+	//String date11;
+
+	Stockaccount(String name1,long qty1,long price1)
+	{
+		this.name1=name1;
+		this.qty1=qty1;
+		this.price1=price1;
+	}
+	
 
 	 Stockaccount(String f1) throws IOException,FileNotFoundException,ParseException
 	{
@@ -73,7 +77,7 @@ class Stockaccount
 
 
 			l1.insertintoend(name1,qty1,price1);
-			st1.push(name1,qty1,price1,choicemode);
+			// st1.push(name1,qty1,price1,badd,choicemode);
 			//qu1.enqueue(name1,qty1,price1);
 
 		}
@@ -81,9 +85,9 @@ class Stockaccount
 			System.out.println("Data being inserted into Linked List \n");
 			l1.display();
 			
-			System.out.println("Data being inserted into Stack \n");
-			st1.print();
-			System.out.println("Queue Displaying ");
+			System.out.println("Data will be inserted into Stack after selecting transactions \n");
+			// st1.print();
+			//System.out.println("Queue Displaying ");
 
 			//qu1.display1();
 
@@ -117,14 +121,15 @@ class Stockaccount
 
 				printReport(name1,qty1,price1);
 				long temp=buy(name1,qty1,price1);
+				System.out.println("Bought shares count is----- :"+badd);
 				Date date1=new Date();
 				System.out.println(date1.toString());
 				l1.delete(name1);
-				l1.display();
+				//l1.display();
 				l1.insertintoend(name1,temp,price1);
 				l1.display();
-				st1.push(name1,temp,price1,choicemode);
-				qu1.enqueue(name1,temp,price1);
+				st1.push(name1,temp,price1,badd,choicemode);
+				qu1.enqueue(name1,temp,date1);
 				type1.put("qty",temp);
 			}
 
@@ -133,20 +138,19 @@ class Stockaccount
 			{	choicemode="SELL";
 				System.out.println("Before selling the data of shares----------- :");
 				date=new Date();
-				String d1=date.toString();
-				System.out.println(d1);
-				
+				System.out.println(date.toString());
 				
 				printReport(name1,qty1,price1);
             	long temp=sell(name1,qty1,price1);
+            	System.out.println("Sold shares count is----- :"+sadd);
             	Date date1=new Date();
 				System.out.println(date1.toString());
 				l1.delete(name1);
-				l1.display();
+				//l1.display();
 				l1.insertintoend(name1,temp,price1);
 				l1.display();
-				st1.push(name1,temp,price1,choicemode);
-				qu1.enqueue(name1,temp,price1);
+				st1.push(name1,temp,price1,sadd,choicemode);
+				qu1.enqueue(name1,temp,date1);
             	type1.put("qty",temp);
 				
 			}
@@ -160,14 +164,19 @@ class Stockaccount
 		
 		 	
 		}
-			System.out.println("Do you want to perform sharing operation");
+			System.out.println("Do you want to perform a share transaction");
 		 	user1=sc.next();
 	}while(!user1.equalsIgnoreCase("no"));
 		//}
+		System.out.println("The Linked list now contains : \n");
+		l1.display();
 		st1.print();
 		qu1.display1();
 
+		
+
 		System.out.println(jo);
+		System.out.println("\n");
 		
 			
 	}
@@ -181,7 +190,8 @@ class Stockaccount
 		// if(name1.equals(opt))
 		// {
 		System.out.println("Okay ! Enter the number of units to buy for" + " " +name1);
-		int q5=sc.nextInt();	
+		int q5=sc.nextInt();
+		badd=q5;	
 		qty1=qty1+q5;
 		//jo.put("qty",qty1);
 		System.out.println("After buying the data of shares------------ :");
@@ -196,13 +206,23 @@ class Stockaccount
 		Scanner sc =new Scanner(System.in);
 		
 		System.out.println("Okay ! Enter the number of units to sell for" + " " +name1);
-		int q5=sc.nextInt();	
+		int q5=sc.nextInt();
+		sadd=q5;
+		if(qty1>0)	
+		{
 		qty1=qty1-q5;
 		//System.out.println(jo);
 		//jo.put("qty",qty1);
 		System.out.println("After selling the data of shares------------ :");
 		printReport(name1,qty1,price1);
 		return qty1;
+		}
+		else
+		{
+		System.out.println("Shares are 0 now. Cannot sell");
+		return 0;
+		}
+		
 	}
 
 	static void printReport(String name1,long qty1,long price1)
@@ -232,64 +252,64 @@ class Stockaccount
 
 
 }
-class Node
-{
-  String data;
-  long data1;
-  long data2;
-  Node link;
+    class Node
+    {
+    String data;
+    long data1;
+    long data2;
+    Node link;
 
-  Node()
-  {
+    Node()
+    {
     data="";
     data1=0;
     data2=0;
     link=null;
-  }
-  Node(String val,long qty,long pri,Node l)
-  {
+    }
+    Node(String val,long qty,long pri,Node l)
+    {
     data=val;
     data1=qty;
     data2=pri;
     link=l;
-  }
-  void SetLink(Node l)
-  {
+    }
+    void SetLink(Node l)
+    {
     link=l;
-  }
-  void SetData(String val,long qty,long pri)
-  {
+    }
+    void SetData(String val,long qty,long pri)
+    {
     data=val;
     data1=qty;
     data2=pri;
 
-  }
-  Node GetLink()
-  { 
+     }
+    Node GetLink()
+    { 
     return link;
-  }
-  String GetData()
-  {
+    }
+    String GetData()
+    {
     return data;
-  }
+    }
 
-}
+ 	}
 
-class LinkedList
-{
-  Node start;
-  Node end;
-  int size;
-  int count;
+    class LinkedList
+    {
+    Node start;
+    Node end;
+    int size;
+    int count;
 
-  LinkedList()
-  {
+    LinkedList()
+    {
     start=null;
     end=null;
+    }
 
-  }
-  void insertintoend(String val,long qty,long pri)
-  {
+    void insertintoend(String val,long qty,long pri)
+    {
     Node n1=new Node(val,qty,pri,null);
     if(start==null)
     {
@@ -302,11 +322,11 @@ class LinkedList
       end=n1;
     }
     count++;
-  }
+    }
 
-  void display()
-  {
-    //count++;
+    void display()
+    {	
+    
     Node temp=start;
     System.out.print(temp.GetData() +" "+ temp.data1 +" "+temp.data2 + "-->");
     temp=start.GetLink();
@@ -316,9 +336,9 @@ class LinkedList
       temp=temp.GetLink();
     }
     System.out.println(temp.GetData()+" "+ temp.data1 +" "+temp.data2);
-  }
+    }
 
- public void delete(String key)
+ 	public void delete(String key)
 
     {
       Node temp = start, prev = null;
@@ -377,7 +397,7 @@ class Stack
     }
   }
 
-  public void push(String val,long qty,long pri,String choicemode)
+  public void push(String val,long qty,long pri,long status,String choicemode)
   {
     Node temp = head;
     head = new Node();
@@ -385,12 +405,13 @@ class Stack
     head.data1=qty;
     head.data2=pri;
     head.link = temp;
-    System.out.println(choicemode +" "+"Operation is Selected for "+ val + " "+"the total count of " +qty +" "+"with a price of "+ pri+ " "+ "is added to the stack \n");
+    System.out.println(choicemode +" "+"Operation is Selected for "+ val + " " +"and updated units of" +" "+ status+" "+" and the total count is now of " +qty +" "+"with a price of "+ pri+ " "+ "is added to the stack \n");
     size++;
   }
 
   public void peak()
   {
+  	System.out.println("Stack maintaining transactions---------------------- \n");
     if(isEmpty())
     {
       System.out.println("Empty stack");
@@ -425,12 +446,55 @@ class Stack
 
 }
 
+class Node1
+{
+  String data;
+  long data1;
+  Date data2;
+  Node1 link;
+
+  Node1()
+  {
+    data="";
+    data1=0;
+    //data2=;
+    link=null;
+  }
+  Node1(String val,long qty,Date pri,Node1 l)
+  {
+    data=val;
+    data1=qty;
+    data2=pri;
+    link=l;
+  }
+  void SetLink(Node1 l)
+  {
+    link=l;
+  }
+  void SetData(String val,long qty,Date pri)
+  {
+    data=val;
+    data1=qty;
+    data2=pri;
+
+  }
+  Node1 GetLink()
+  { 
+    return link;
+  }
+  String GetData()
+  {
+    return data;
+  }
+
+}
+
 class Queue
 {
 
-	Node front;
-	Node rear;
-	int size;
+	Node1 front;
+	Node1 rear;
+	int size=0;
 	int count=0;
 	 Queue()
 	 {
@@ -439,9 +503,9 @@ class Queue
 	 	size=0;
 	 }
 
-	 void enqueue(String val,long qty,long pri)
+	 void enqueue(String val,long qty,Date pri)
 	 {
-	 	Node n1=new Node(val,qty,pri,null);
+	 	Node1 n1=new Node1(val,qty,pri,null);
 	 	size++;
 	 	if(rear==null)
 	 	{
@@ -472,7 +536,7 @@ class Queue
 	 		System.out.println(temp + " " + "is dequeued");
 	 	}
 	 	String temp1;
-	 	Node t1;
+	 	Node1 t1;
 	 	t1=front;
 	 	temp1=t1.data;
 	 	front=front.link;
@@ -482,39 +546,20 @@ class Queue
 
 	 void display1()
 	 {
-	 	Node temp1=front;
+	 	Node1 temp1=front;
+
+	 	System.out.println("The Queue to be displayed is:---------------");
 	 	while(temp1!=null)
-	 	
 	 	{
-	 		System.out.println("The Queue to be displayed is:");
-	 		System.out.print(temp1.data+" "+ temp1.data1 +" "+temp1.data2 + "->");
+	 		System.out.println("Transaction " + count + ")");
+	 		System.out.print(temp1.data+" "+ temp1.data1 +" "+temp1.data2 + "-> \n\n");
 	 		temp1=temp1.link;
+	 		count++;
 
 		}
+		System.out.println("\n\n");
 
 
 	}
 }
-  // void sort(Node start)
-  // {
-
-  //   // Node head=start;
-  //   // Node temp=head.GetLink();
-  //   for(int i=0;i<count;i++)
-  //   {
-  //     Node head=start;
-  //     Node temp=head.GetLink();
-  //       for(int j=0;j<count-1;j++)
-  //         {
-  //           if(head.GetData()>temp.GetData())
-  //           {  
-  //           String temp1=head.GetData();
-  //           head.data=temp.GetData();
-  //           temp.data=temp1;
-  //           }
-  //           head=temp;
-  //           temp=temp.GetLink();
-  //         }
-  //   }
-  // }
- 
+  
